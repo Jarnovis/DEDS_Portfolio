@@ -3,7 +3,7 @@ import pandas as pd
 import sqlite3 as sql
 
 def run():
-    goSalesTrainConn = sql.connect("../data/raw/go_sales_train.sqlite")
+    goSalesTrainConn = sql.connect(r"C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\data\raw\go_sales_train.sqlite")
 
     products = pd.read_sql(f"SELECT * FROM product", goSalesTrainConn)
     product_types = pd.read_sql(f"SELECT * FROM product_type", goSalesTrainConn)
