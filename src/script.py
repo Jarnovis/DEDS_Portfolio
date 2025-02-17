@@ -24,22 +24,22 @@ def run():
     productionCostsInfo = products[(products["PRODUCTION_COST"] > 50) & (products["PRODUCTION_COST"] < 100)]
     productionCostsSpecific = productionCostsInfo[["PRODUCT_NAME", "PRODUCTION_COST"]]
 
-    productionCostsSpecific
+    productionCostsSpecific.to_excel(r"data/processed/productionCostsSpecific.xlsx", sheet_name="productionCostsSpecific", index=False)
 
     prodctionMargeInfo = products[(products["MARGIN"] < 0.2) | (products["MARGIN"] > 0.6)]
     productionMargeSpecific = prodctionMargeInfo[["PRODUCT_NAME", "MARGIN"]]
-    productionMargeSpecific
+    productionMargeSpecific.to_excel(r"data/processed/productionMarginSpecific.xlsx", sheet_name="productionMarginSpecific", index=False)
 
     countriesCurrencyInfo = countries[countries["CURRENCY_NAME"] == "francs"]
     countriesCurrencySpecific = countriesCurrencyInfo[["COUNTRY"]]
 
-    countriesCurrencySpecific
+    countriesCurrencySpecific.to_excel(r"data/processed/countriesCurrencySpecific.xlsx", sheet_name="countriesCurrencySpecific", index=False)
 
     productIntroductionInfo = products[products["MARGIN"] > 0.5].drop_duplicates(subset=["INTRODUCTION_DATE"])
     productIntroductionInfo
     productIntroductionSpecific = productIntroductionInfo[["INTRODUCTION_DATE"]]
 
-    productIntroductionSpecific
+    productIntroductionSpecific.to_excel(r"data/processed/productionIntroductionSpecific.xlsx", sheet_name="productionIntroductionSpecific", index=False)
 
     sales_info = sales_branch[(sales_branch["ADDRESS2"].notna()) & (sales_branch["REGION"].notna())]
     sales_info[["ADDRESS1", "CITY"]]
@@ -48,18 +48,18 @@ def run():
 
     countriesCurrencyDollar = countriesCurrencyDollar.sort_values(by=["COUNTRY"])
 
-    countriesCurrencyDollar
+    countriesCurrencyDollar.to_excel(r"data/processed/contriesCurrencyDollar.xlsx", sheet_name="contriesCurrencyDollar", index=False)
 
     retailsGermany = retailer_site[(retailer_site["POSTAL_ZONE"].astype(str).str[0] == "D") & (retailer_site["ADDRESS2"].notna())]
     retailsGermany = retailsGermany[["ADDRESS1", "ADDRESS2", "CITY"]]
-    retailsGermany
+    retailsGermany.to_excel(r"data/processed/retailsGermany.xlsx", sheet_name="retailsGermany", index=False)
 
     returendQuantity = pd.DataFrame({"RETUREND_QUANTITIES" : return_items[["RETURN_QUANTITY"]].sum()})
 
-    returendQuantity
+    returendQuantity.to_excel(r"data/processed/returend.xlsx", sheet_name="quantity", index=False)
     totalRegions = pd.DataFrame({"Regions" : sales_branch[["REGION"]].drop_duplicates(subset=["REGION"]).count()})
 
-    totalRegions
+    totalRegions.to_excel(r"data/processed/totalRegions.xlsx", sheet_name="totalRegions", index=False)
     
     lowest : float = products.nsmallest(1, "MARGIN")["MARGIN"].iloc[0]
     highest : float = products.nlargest(1, "MARGIN")["MARGIN"].iloc[0]
