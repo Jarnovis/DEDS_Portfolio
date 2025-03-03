@@ -1,0 +1,56 @@
+country 2
+sales_territory 9
+age_group 1
+sales_demographic 7
+retailer_headquarters 3
+retailer_segment 3
+retailer_type 4
+retailer 1
+retailer_site 2
+retailer_contact 1
+product_line 5
+product_type 5
+product 4
+product_forcast 
+inventory
+sales_branch 6
+statisfaction_type 9
+statisfaction 8
+sales_staff 6
+course 6
+training 6
+order_method 3
+order_header 2
+order_details 1
+return_reason 1
+returned_item 1
+
+2917334121554  69866632111
+
+sales_territory 10
+country 2
+sales_branch 17
+sales_staff 17
+statisfaction_type 19
+statisfaction 18
+course 17
+training 17
+product_line 13
+product_type 13
+product 12
+product_forcast
+inventory
+age_group 1
+retailer_segment 4
+retailer_headquarters 3
+sales_demographic 5
+retailer_type 4
+retailer_site 3
+retailer_contact 2
+retailer 1
+order_method 3
+order_header 2
+order_details 1
+return_reason 1
+returned_item 1
+
