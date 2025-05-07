@@ -1,0 +1,15 @@
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\bin\Debug\net8.0\AI_C#.exe
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\bin\Debug\net8.0\AI_C#.deps.json
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\bin\Debug\net8.0\AI_C#.runtimeconfig.json
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\bin\Debug\net8.0\AI_C#.dll
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\bin\Debug\net8.0\AI_C#.pdb
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.AssemblyInfoInputs.cache
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.AssemblyInfo.cs
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.csproj.CoreCompileInputs.cache
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.sourcelink.json
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.dll
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\refint\AI_C#.dll
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.pdb
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\AI_C#.genruntimeconfig.cache
+C:\Users\jdvis_x5odeao\Semester_4\DEDS_Portfolio\AI_C#\obj\Debug\net8.0\ref\AI_C#.dll
