@@ -1,297 +1,231 @@
-// namespace AI;
-
-// using System;
-// using System.Collections.Generic;
-
-// public class NeuralNetwork
-// {
-//     /// <summary>
-//     /// Benodigde groote lijst input
-//     /// </summary>
-//     const int inputNodes = 4;
-//     /// <summary>
-//     /// Verstopte Neurons
-//     /// </summary>
-//     const int hiddenNodes = 5;
-//     /// <summary>
-//     /// Output (0 - 1)
-//     /// </summary>
-//     const int outputNodes = 1;
-//     /// <summary>
-//     /// Leersnelheid voor precie (nu 10%)
-//     /// </summary>
-//     const double learningRate = 0.1;
-//     /// <summary>
-//     /// Hoevaak een dataset wordt herhaald (te hoge epochs zorgt voor overfitting)
-//     /// </summary>
-//     const int epochs = 5000;
-
-//     /// <summary>
-//     /// 2D Array<br/>
-//     /// Elk element staat voor een gewicht dat de sterkte bepaald tussen één specifieke input node en één specifice hidden node.</br>
-//     /// Wanneer een netwerk getrained wordt, worden deze gewichten aangepast om minimale errors te voorkomen in de output.
-//     /// </summary>
-//     static double[,] weightsInputHidden = new double[inputNodes, hiddenNodes];
-//     /// <summary>
-//     /// 1D Array<br/>
-//     /// Elk element representeerd een bias voor een specifieke verstope node.<br/>
-//     /// De Bias is toegevoegd aan het gewicht van de som van de inputs van die hidden node.<br/>
-//     /// Het doel is om het model beter de data toe te passen voor de activatie.<br/>
-//     /// Each element in this array represents a bias for a specific hidden node.<br/>
-//     /// Biases worden ook geleerd tijdens training.
-//     /// </summary>
-//     static double[] biasHidden = new double[hiddenNodes];
-//     /// <summary>
-//     /// 2D Array<br/>
-//     /// Elk element in de array vertegenwoordig een gewicht dat verbonden is met een specifieke hidden node naar de output node.<br/>
-//     /// Net zoals de weightsInputHidden, zijn deze gewichten bepaald op hoeveel de invloed van elke hidden node is op de uiteindelijke output.<br/>
-//     /// Tijdens trainen, worden deze gewichten aangepast.
-//     /// </summary>
-//     static double[,] weightsHiddenOutput = new double[hiddenNodes, outputNodes];
-//     /// <summary>
-//     /// 1D Array<br/>
-//     /// Arrat bev
-//     /// This array contains a single bias value for the output node.
-//     /// The bias is added to the weighted sum of the hidden nodes' outputs before passing it through the activation function (in this case, the sigmoid function).
-//     /// The bias allows the output to shift in order to better match the target labels during training.
-//     /// </summary>
-//     static double[] biasOutput = new double[outputNodes];
-
-//     static Random rand = new Random();
-
-//     static void InitializeWeights()
-//     {
-//         for (int i = 0; i < inputNodes; i++)
-//             for (int j = 0; j < hiddenNodes; j++)
-//                 weightsInputHidden[i, j] = rand.NextDouble() * 2 - 1;
-
-//         for (int j = 0; j < hiddenNodes; j++)
-//             weightsHiddenOutput[j, 0] = rand.NextDouble() * 2 - 1;
-
-//         for (int j = 0; j < hiddenNodes; j++)
-//             biasHidden[j] = rand.NextDouble() * 2 - 1;
-
-//         biasOutput[0] = rand.NextDouble() * 2 - 1;
-//     }
-
-//     static double Sigmoid(double x) => 1 / (1 + Math.Exp(-x));
-
-//     static double SigmoidDerivative(double x) => x * (1 - x);
-
-//     public static void Create()
-//     {
-//         InitializeWeights();
-
-//         // Trainingsdata
-//         List<double[]> inputs = new List<double[]>
-//         {
-//             new double[] {0, 0, 0, 1},
-//             new double[] {1, 1, 0, 0},
-//             new double[] {1, 0, 1, 1},
-//             new double[] {0, 1, 1, 0},
-//             new double[] {1, 1, 1, 1}
-//         };
-//         double[] labels = { 0, 1, 1, 0, 1 };
-
-//         for (int epoch = 0; epoch < epochs; epoch++)
-//         {
-//             double totalError = 0;
-//             for (int i = 0; i < inputs.Count; i++)
-//             {
-//                 double[] input = inputs[i];
-//                 double target = labels[i];
-
-//                 // --- Forward ---
-//                 double[] hiddenInputs = new double[hiddenNodes];
-//                 for (int j = 0; j < hiddenNodes; j++)
-//                 {
-//                     for (int k = 0; k < inputNodes; k++)
-//                         hiddenInputs[j] += input[k] * weightsInputHidden[k, j];
-//                     hiddenInputs[j] += biasHidden[j];
-//                     hiddenInputs[j] = Sigmoid(hiddenInputs[j]);
-//                 }
-
-//                 double output = 0;
-//                 for (int j = 0; j < hiddenNodes; j++)
-//                     output += hiddenInputs[j] * weightsHiddenOutput[j, 0];
-//                 output += biasOutput[0];
-//                 output = Sigmoid(output);
-
-//                 double error = target - output;
-//                 totalError += error * error;
-
-//                 // --- Backpropagation ---
-//                 double dOutput = error * SigmoidDerivative(output);
-
-//                 // Hidden-output updates
-//                 for (int j = 0; j < hiddenNodes; j++)
-//                     weightsHiddenOutput[j, 0] += learningRate * dOutput * hiddenInputs[j];
-//                 biasOutput[0] += learningRate * dOutput;
-
-//                 // Hidden layer updates
-//                 double[] dHidden = new double[hiddenNodes];
-//                 for (int j = 0; j < hiddenNodes; j++)
-//                 {
-//                     dHidden[j] = dOutput * weightsHiddenOutput[j, 0] * SigmoidDerivative(hiddenInputs[j]);
-//                     for (int k = 0; k < inputNodes; k++)
-//                         weightsInputHidden[k, j] += learningRate * dHidden[j] * input[k];
-//                     biasHidden[j] += learningRate * dHidden[j];
-//                 }
-//             }
-
-//             if (epoch % 500 == 0)
-//                 Console.WriteLine($"Epoch {epoch}, MSE: {totalError / inputs.Count:F4}");
-//         }
-
-//         // --- Testen ---
-//         Console.WriteLine("\nResultaten:");
-//         foreach (var input in inputs)
-//         {
-//             double[] hidden = new double[hiddenNodes];
-//             for (int j = 0; j < hiddenNodes; j++)
-//             {
-//                 for (int k = 0; k < inputNodes; k++)
-//                     hidden[j] += input[k] * weightsInputHidden[k, j];
-//                 hidden[j] += biasHidden[j];
-//                 hidden[j] = Sigmoid(hidden[j]);
-//             }
-
-//             double output = 0;
-//             for (int j = 0; j < hiddenNodes; j++)
-//                 output += hidden[j] * weightsHiddenOutput[j, 0];
-//             output += biasOutput[0];
-//             output = Sigmoid(output);
-
-//             Console.WriteLine($"Input: [{string.Join(", ", input)}] => Output: {output:F4}");
-//         }
-//     }
-// }
-
-
 namespace AI;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class NeuralNetwork
 {
-    const int inputNodes = 4;
-    const int hiddenNodes = 5;
-    const int outputNodes = 1;
-    const double learningRate = 0.1;
-    const int epochs = 3550;
-    static double[,] weightsInputHidden = new double[inputNodes, hiddenNodes];
-    static double[] biasHidden = new double[hiddenNodes];
-    static double[,] weightsHiddenOutput = new double[hiddenNodes, outputNodes];
-    static double[] biasOutput = new double[outputNodes];
+    const int inputNodes = 9;
+    const int hiddenNodes1 = 72;
+    const int hiddenNodes2 = 18;
+    const int outputNodes = 36;
+    // Snelheid leren
+    const double learningRate = 0.01;
+    // Aantal herhalingen
+    const int epochs = 3000;
 
-    static Random rand = new Random();
+    // Gewicht matrixes tussen lagen
+    static readonly double[,] W1 = new double[inputNodes, hiddenNodes1];
+    static readonly double[,] W2 = new double[hiddenNodes1, hiddenNodes2];
+    static readonly double[,] W3 = new double[hiddenNodes2, outputNodes];
 
+    // Biases per laag
+    static readonly double[] B1 = new double[hiddenNodes1];
+    static readonly double[] B2 = new double[hiddenNodes2];
+    static readonly double[] B3 = new double[outputNodes];
+
+    static readonly Random rnd = new();
+
+    // Gewichten en biases worden willekeurig geïnitialiseerd tussen -1 en 1
     static void InitializeWeights()
     {
-        for (int i = 0; i < inputNodes; i++)
-            for (int j = 0; j < hiddenNodes; j++)
-                weightsInputHidden[i, j] = rand.NextDouble() * 2 - 1;
+        static void Init(double[,] M)
+        {
+            for (int i = 0; i < M.GetLength(0); i++)
+                for (int j = 0; j < M.GetLength(1); j++)
+                    M[i, j] = rnd.NextDouble() * 2 - 1;
+        }
 
-        for (int j = 0; j < hiddenNodes; j++)
-            weightsHiddenOutput[j, 0] = rand.NextDouble() * 2 - 1;
-
-        for (int j = 0; j < hiddenNodes; j++)
-            biasHidden[j] = rand.NextDouble() * 2 - 1;
-
-        biasOutput[0] = rand.NextDouble() * 2 - 1;
+        Init(W1); Init(W2); Init(W3);
+        for (int i = 0; i < B1.Length; i++) B1[i] = rnd.NextDouble() * 2 - 1;
+        for (int i = 0; i < B2.Length; i++) B2[i] = rnd.NextDouble() * 2 - 1;
+        for (int i = 0; i < B3.Length; i++) B3[i] = rnd.NextDouble() * 2 - 1;
     }
 
+    // Voor verborgen lagen
     static double Sigmoid(double x) => 1 / (1 + Math.Exp(-x));
+    
+    // Voor de outputlaag om waarschijnlijkheden te krijgen
+    static double SigmoidDeriv(double y) => y * (1 - y);
 
-    static double SigmoidDerivative(double x) => x * (1 - x);
-
-    public static void Create()
+    // Nodig voor backpropagation
+    static double[] Softmax(double[] z)
     {
+        var m = z.Max();
+        var ex = z.Select(v => Math.Exp(v - m)).ToArray();
+        var sum = ex.Sum();
+        return ex.Select(v => v / sum).ToArray();
+    }
+
+    // Willekeurige invoer pixels om beter te kunnen werken met ruis
+    static void FlipPixels(double[] v, double pct = 0.2)
+    {
+        int flips = (int)(v.Length * pct);
+        for (int i = 0; i < flips; i++)
+        {
+            int idx = rnd.Next(v.Length);
+            v[idx] = v[idx] > 0.5 ? 0 : 1;
+        }
+    }
+
+    // X => input date (3x3)
+    // Y => correcte labels
+    public static void Create(IList<double[]> X, IList<double[]> Y)
+    {
+        // Alle gewichten en biases worden geïnitaliseerd met willekeurig waarden tussen -1 en 1
         InitializeWeights();
 
-        // Trainingsdata
-        List<double[]> inputs = new List<double[]>
-        {
-            new double[] {0, 0, 0, 1},
-            new double[] {1, 1, 0, 0},
-            new double[] {1, 0, 1, 1},
-            new double[] {0, 1, 1, 0},
-            new double[] {1, 1, 1, 1}
-        };
+        IList<double[]> xReal = X.Select(x => (double[])x.Clone()).ToList();
+        IList<double[]> yReal = Y.Select(y => (double[])y.Clone()).ToList();
 
-        double[] labels = [0, 1, 1, 0, 1];
 
         for (int epoch = 0; epoch < epochs; epoch++)
         {
-            double totalError = 0;
-            for (int i = 0; i < inputs.Count; i++)
+            double epochError = 0;
+
+            // Loop over alle trainings voorbeelden
+            for (int n = 0; n < X.Count; n++)
             {
-                double[] input = inputs[i];
-                double target = labels[i];
+                // Toevoegen van 40% ruis aan afbeeldingen
+                var x0 = (double[])X[n].Clone();
+                FlipPixels(x0, 0.4);
 
-                // --- Forward ---
-                double[] hiddenInputs = new double[hiddenNodes];
-                for (int j = 0; j < hiddenNodes; j++)
+                var h1 = new double[hiddenNodes1];
+
+                // Verbogen laag 1
+                // Berekenen activaties voor hiddenNodes1 aantal met sigmoid 
+                for (int i = 0; i < hiddenNodes1; i++)
                 {
-                    for (int k = 0; k < inputNodes; k++)
-                        hiddenInputs[j] += input[k] * weightsInputHidden[k, j];
-                    hiddenInputs[j] += biasHidden[j];
-                    hiddenInputs[j] = Sigmoid(hiddenInputs[j]);
+                    for (int j = 0; j < inputNodes; j++)
+                        h1[i] += x0[j] * W1[j, i];
+                    h1[i] = Sigmoid(h1[i] + B1[i]);
                 }
 
-                double output = 0;
-                for (int j = 0; j < hiddenNodes; j++)
-                    output += hiddenInputs[j] * weightsHiddenOutput[j, 0];
-                output += biasOutput[0];
-                output = Sigmoid(output);
-
-                double error = target - output;
-                totalError += error * error;
-
-                // --- Backpropagation ---
-                double dOutput = error * SigmoidDerivative(output);
-
-                // Hidden-output updates
-                for (int j = 0; j < hiddenNodes; j++)
-                    weightsHiddenOutput[j, 0] += learningRate * dOutput * hiddenInputs[j];
-                biasOutput[0] += learningRate * dOutput;
-
-                // Hidden layer updates
-                double[] dHidden = new double[hiddenNodes];
-                for (int j = 0; j < hiddenNodes; j++)
+                var h2 = new double[hiddenNodes2];
+                // Verbogen laag 2
+                // Berekenen activaties voor hiddenNodes2 aantal met sigmoid 
+                for (int i = 0; i < hiddenNodes2; i++)
                 {
-                    dHidden[j] = dOutput * weightsHiddenOutput[j, 0] * SigmoidDerivative(hiddenInputs[j]);
-                    for (int k = 0; k < inputNodes; k++)
-                        weightsInputHidden[k, j] += learningRate * dHidden[j] * input[k];
-                    biasHidden[j] += learningRate * dHidden[j];
+                    for (int j = 0; j < hiddenNodes1; j++)
+                        h2[i] += h1[j] * W2[j, i];
+                    h2[i] = Sigmoid(h2[i] + B2[i]);
                 }
+
+                var o = new double[outputNodes];
+                // Berekenen uitoer voor alle output classes
+                for (int i = 0; i < outputNodes; i++)
+                {
+                    for (int j = 0; j < hiddenNodes2; j++)
+                        o[i] += h2[j] * W3[j, i];
+                    o[i] += B3[i];
+                }
+
+                // Zet uitvoer om in kansverdeling van de output classes
+                var yHat = Softmax(o);
+
+                // CROSS-ENTROPY error
+                var dO = new double[outputNodes];
+                for (int i = 0; i < outputNodes; i++)
+                {
+                    // Fout output
+                    dO[i] = yHat[i] - Y[n][i];
+
+                    // Opslaan fout
+                    epochError += -Y[n][i] * Math.Log(yHat[i] + 1e-15); 
+                }
+
+                // BACKPROP into W3/B3
+                var dH2 = new double[hiddenNodes2];
+                // Past gewichten en biases aan op basis van de fout
+                for (int i = 0; i < hiddenNodes2; i++)
+                {
+                    for (int k = 0; k < outputNodes; k++)
+                        dH2[i] += dO[k] * W3[i, k];
+                    dH2[i] *= SigmoidDeriv(h2[i]);
+                }
+
+                for (int i = 0; i < hiddenNodes2; i++)
+                    for (int k = 0; k < outputNodes; k++)
+                        // Berekenen van fout dO terug naar dh2 en pas gewichten aan
+                        W3[i, k] -= learningRate * dO[k] * h2[i];
+                for (int k = 0; k < outputNodes; k++)
+                    B3[k] -= learningRate * dO[k];
+
+                // BACKPROP into W2/B2
+                var dH1 = new double[hiddenNodes1];
+                for (int i = 0; i < hiddenNodes1; i++)
+                {
+                    for (int k = 0; k < hiddenNodes2; k++)
+                        // Berekenen DH1
+                        dH1[i] += dH2[k] * W2[i, k];
+                    dH1[i] *= SigmoidDeriv(h1[i]);
+                }
+                for (int i = 0; i < hiddenNodes1; i++)
+                    for (int k = 0; k < hiddenNodes2; k++)
+                        W2[i, k] -= learningRate * dH2[k] * h1[i];
+                for (int k = 0; k < hiddenNodes2; k++)
+                    B2[k] -= learningRate * dH2[k];
+
+                // BACKPROP into W1/B1
+                for (int i = 0; i < inputNodes; i++)
+                    for (int k = 0; k < hiddenNodes1; k++)
+                        W1[i, k] -= learningRate * dH1[k] * x0[i];
+                for (int k = 0; k < hiddenNodes1; k++)
+                    B1[k] -= learningRate * dH1[k];
             }
 
-            if (epoch % 500 == 0)
-                Console.WriteLine($"Epoch {epoch}, MSE: {totalError / inputs.Count:F4}");
+            if (epoch % 100 == 0 || epoch == epochs - 1)
+                Console.WriteLine($"Epoch {epoch}, Cross-Entropy: {(epochError / X.Count):F4}");
         }
 
-        // --- Testen ---
-        Console.WriteLine("\nResultaten:");
-        foreach (var input in inputs)
+        // EVALUATION (no noise)
+        // Opnieuw uitvoeren op originele input
+        // Bereken verspelling met de hoogste kans
+        // Vergelijken voorspelling (pred) met realiteit (n)
+        // Berekenen nauwkeurigheid
+        Console.WriteLine("\nResults:");
+        int correct = 0;
+        for (int n = 0; n < xReal.Count; n++)
         {
-            double[] hidden = new double[hiddenNodes];
-            for (int j = 0; j < hiddenNodes; j++)
+            var x0 = X[n];
+            var h1 = new double[hiddenNodes1];
+            for (int i = 0; i < hiddenNodes1; i++)
             {
-                for (int k = 0; k < inputNodes; k++)
-                    hidden[j] += input[k] * weightsInputHidden[k, j];
-                hidden[j] += biasHidden[j];
-                hidden[j] = Sigmoid(hidden[j]);
+                for (int j = 0; j < inputNodes; j++)
+                    h1[i] += x0[j] * W1[j, i];
+                h1[i] = Sigmoid(h1[i] + B1[i]);
             }
 
-            double output = 0;
-            for (int j = 0; j < hiddenNodes; j++)
-                output += hidden[j] * weightsHiddenOutput[j, 0];
-            output += biasOutput[0];
-            output = Sigmoid(output);
+            var h2 = new double[hiddenNodes2];
+            for (int i = 0; i < hiddenNodes2; i++)
+            {
+                for (int j = 0; j < hiddenNodes1; j++)
+                    h2[i] += h1[j] * W2[j, i];
+                h2[i] = Sigmoid(h2[i] + B2[i]);
+            }
 
-            Console.WriteLine($"Input: [{string.Join(", ", input)}] => Output: {output:F4}");
+            var o = new double[outputNodes];
+            for (int i = 0; i < outputNodes; i++)
+            {
+                for (int j = 0; j < hiddenNodes2; j++)
+                    o[i] += h2[j] * W3[j, i];
+                o[i] += B3[i];
+            }
+
+            var yHat = Softmax(o);
+            int pred = Array.IndexOf(yHat, yHat.Max());
+            
+            int real = Array.IndexOf(Y[n], 1.0);
+            if (pred == real) correct++;
+
+            if (pred != real)
+                for (int i = 0; i < yHat.Length; i++)
+                    Console.WriteLine($"Class {i}: {yHat[i]:F3}");
+
+            Console.WriteLine($"Input #{n}: Pred={pred}, Real={n}, Conf={yHat[pred]:F3}");
         }
+
+        Console.WriteLine($"Accuracy: {100.0 * correct / X.Count:F2}%");
     }
 }
