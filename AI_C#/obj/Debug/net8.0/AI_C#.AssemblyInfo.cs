@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AI_C#")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82165c01a70c23cd24a0219356ffe28ebd6a80e8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a5a90a17c4506237359f3ef7a9a6a84ca95c285")]
 [assembly: System.Reflection.AssemblyProductAttribute("AI_C#")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AI_C#")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
