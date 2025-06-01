@@ -1,11 +1,11 @@
 import pygame
-import player
 import enviroment
+import player
+import numpy as np
 import agent
-import matplotlib.pyplot as plt
 
 class window:
-    def __init__(self, width, height, grid):
+    def __init__(self, width, height, grid, agent):
         self.width = width
         self.height = height
         self.grid_width = len(grid[0])  
@@ -14,14 +14,14 @@ class window:
         self.blockSizeY = self.height // self.grid_height
         self.given_grid = grid
         self.plr = player.player(self.given_grid)
-        
+        self.agent = agent
+
         pygame.init()
-    
-    
+
     def create(self):
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Maze")
-    
+
     def draw_grid(self):
         for row in range(self.grid_height):
             for col in range(self.grid_width):
@@ -32,121 +32,85 @@ class window:
                     self.blockSizeY
                 )
 
-                if self.given_grid[row][col] == 0:
-                    pygame.draw.rect(
-                        self.screen, 
-                        (255, 255, 255), 
-                        rect
-                    )
-                elif self.given_grid[row][col] == 2:
-                    pygame.draw.rect(
-                        self.screen, 
-                        (0, 0, 0), 
-                        rect
-                    )
-                elif self.given_grid[row][col] == 3:
-                    pygame.draw.rect(
-                        self.screen, 
-                        (0, 255, 0), 
-                        rect
-                    )
+                val = self.given_grid[row][col]
+                if val == 0:
+                    color = (255, 255, 255)
+                elif val == 1:
+                    color = (255, 0, 0)  
+                elif val == 2:
+                    color = (0, 0, 0)    
+                elif val == 3:
+                    color = (0, 255, 0)    
                 else:
-                    pygame.draw.rect(
-                        self.screen, 
-                        (255, 0, 0), 
-                        rect
-                    )
+                    color = (100, 100, 100) 
 
-                pygame.draw.rect(
-                    self.screen,
-                    (100, 100, 100),
-                    rect,
-                    1
-                )
-    
+                pygame.draw.rect(self.screen, color, rect)
+                pygame.draw.rect(self.screen, (50, 50, 50), rect, 1)
+
     def draw_plr(self):
-        plr_x, plr_y = self.plr.get_player_position()
-        
+        plr_x, plr_y = self.agent.current_pos
+
         rect = pygame.Rect(
             plr_x * self.blockSizeX,
             plr_y * self.blockSizeY,
             self.blockSizeX,
             self.blockSizeY
         )
+        pygame.draw.rect(self.screen, (0, 0, 255), rect)  
     
-        pygame.draw.rect(
-            self.screen, 
-            (100, 100, 100), 
-            rect
-        )
-
-    # def run(self):
-    #     running = True
-        
-    #     while running:
-    #         for event in pygame.event.get():
-    #             if event.type == pygame.QUIT:
-    #                 running = False
-                
-    #             self.plr.movement(event)
-            
-    #         self.screen.fill((0, 0, 0))
-    #         self.draw_grid()
-            
-            
-    #         self.draw_plr()
-    #         pygame.display.flip()
-
-    #     pygame.quit()
+    def text(self, episodes, steps, finishes, delay):
+        font = pygame.font.SysFont(None, 24)
+        text_surface = font.render(f"Episode: {episodes} | Steps: {steps} | Goal reached: {finishes} | Deaths: {episodes - finishes - 1} | Delay: {delay}", True, (255, 255, 255))
+        self.screen.blit(text_surface, (0, 0))
 
 
     def run(self):
         running = True
-        forced_game_over = False
-        bot_num = 1
-        
-        env = enviroment.enviroment(self.given_grid, self.plr)
-        bot = agent.agent(self.given_grid, alpha=0.1, random_factor=0.25)
-        
-        while running:            
-            while not env.is_game_over():
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
-                    
-                state, _ = env.get_state_and_reward()
-                allowed_moves = env.allowed_states.get(state, [])
-                
-                print(allowed_moves)
-                
-                if not allowed_moves:
-                    print(f"No allowed moves from {state}. Stopping.")
+        clock = pygame.time.Clock()
+        steps = 0
+        episodes = 1
+        finishes = 0
+        speed = 0
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     running = False
-                    continue
-                
-                action = bot.choose_action(state, allowed_moves)
-                env.update(action)
-                
-                state, reward = env.get_state_and_reward()
-                bot.update_state_history(state, reward)
-                
-                self.screen.fill((0, 0, 0))
-                self.draw_grid()
-                self.draw_plr()
-                
-                font = pygame.font.SysFont(None, 24)
-                text = font.render(f"Episode: {bot_num} | steps: {env.steps}", True, (255, 255, 255))
-                self.screen.blit(text, (10, 10))  # (10, 10)=position
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        if speed > 0:
+                            speed -= 10
+                            if speed < 0:
+                                speed = 0
+                    elif event.key == pygame.K_DOWN:
+                        speed += 10
 
+            current_pos = self.agent.current_pos
+            next_pos, reward = self.agent.learn_step(current_pos)
             
-                pygame.display.flip()
-                
-                if env.steps > 350:
-                    forced_game_over = True
+            self.plr.set_position(next_pos)
+            steps += 1
 
-                if env.is_game_over() or forced_game_over:
-                    bot.learn()
-                    env = enviroment.enviroment(self.given_grid, self.plr)
-                    forced_game_over = False
-                    bot_num += 1
+            self.screen.fill((0, 0, 0))
+            self.draw_grid()
+            self.draw_plr()
+            self.text(episodes, steps, finishes, speed)
+            pygame.display.flip()
 
+            print(next_pos, current_pos)
+            
+            if reward == -100 or reward == 100 or next_pos == current_pos:
+                if reward == 100: 
+                    print("Goal reached!")
+                    self.agent.current_pos = self.agent.env.START
+                    steps = 0
+                    episodes += 1
+                    finishes += 1
+                elif reward == -100:
+                    print("Hit a wall! Restarting episode.")
+                    self.agent.current_pos = self.agent.env.START
+                    steps = 0
+                    episodes += 1
+
+            pygame.time.delay(speed) 
+        pygame.quit()

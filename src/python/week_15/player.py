@@ -10,8 +10,7 @@ ACTIONS = {
 class player:
     def __init__(self, grid):
         self.grid = grid
-        self.x = 0
-        self.y = 0
+        self.x, self.y = self.get_start_position()
         
         self.get_start_position()
     
@@ -19,11 +18,9 @@ class player:
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
                 if self.grid[y][x] == 2:
-                    self.x = x
-                    self.y = y
-                    break
+                    return (x, y)
         
-        print(self.x, self.y)
+        return (0, 0)
     
     def movement_logic(self, x, y):
         if (0 <= x < len(self.grid[0]) and 0 <= y < len(self.grid)):
@@ -57,3 +54,9 @@ class player:
     
     def get_player_position(self):
         return (self.x, self.y)
+    
+    def reset_plr(self):
+        self.get_start_position()
+    
+    def set_position(self, pos):
+        self.position = pos
