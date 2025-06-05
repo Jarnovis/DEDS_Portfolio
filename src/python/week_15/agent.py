@@ -23,8 +23,6 @@ class agent(object):
         self.actions_list = list(ACTIONS.values())
         
         self.current_pos = enviroment.START
-        
-        print(f"GRID: {self.env.GRID}")
     
     def choose_action(self, state):
         # als de int kleiner is dan epislon, random keuze

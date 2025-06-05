@@ -2,51 +2,65 @@ import random
 
 class maze:
     @staticmethod
-    def generate_maze(width=20, height=20, min_splits=5):
-        if width % 2 == 0:
-            width -= 1
-        if height % 2 == 0:
-            height -= 1
+    def generate_random_maze(width=20, height=20, wall_density=0.25, min_paths=2, max_attempts=100, traps=10):
+        def count_paths(grid, start, end, max_paths=3, max_depth=200):
+            path_count = 0
 
-        while True:
-            grid = [[1 for _ in range(width)] for _ in range(height)]
-            start_x, start_y = 1, 1
-            grid[start_y][start_x] = 0
-            stack = [(start_x, start_y)]
-            directions = [(2, 0), (-2, 0), (0, 2), (0, -2)]
-
-            while stack:
-                x, y = stack[-1]
-                random.shuffle(directions)
-                carved = False
-
-                for dx, dy in directions:
+            def dfs(x, y, visited, depth):
+                nonlocal path_count
+                if (x, y) == end:
+                    path_count += 1
+                    return
+                if path_count >= max_paths or depth >= max_depth:
+                    return
+                for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]:
                     nx, ny = x + dx, y + dy
-                    if 1 <= nx < width - 1 and 1 <= ny < height - 1 and grid[ny][nx] == 1:
-                        grid[ny][nx] = 0
-                        grid[y + dy // 2][x + dx // 2] = 0
-                        stack.append((nx, ny))
-                        carved = True
-                        break
+                    if (0 <= nx < width and 0 <= ny < height and
+                        (grid[ny][nx] == 0 or grid[ny][nx] == 4) and (nx, ny) not in visited):
+                        visited.add((nx, ny))
+                        dfs(nx, ny, visited, depth + 1)
+                        visited.remove((nx, ny))
 
-                if not carved:
-                    stack.pop()
+            visited = set()
+            visited.add(start)
+            dfs(start[0], start[1], visited, 0)
+            return path_count
 
-            grid[1][1] = 2
-            grid[height - 2][width - 2] = 3
+        def open_neighbors(grid, pos, directions):
+            x, y = pos
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < width and 0 <= ny < height:
+                    grid[ny][nx] = 0
 
-            splits = 0
+        for attempt in range(max_attempts):
+            grid = [[1 if x == 0 or y == 0 or x == width - 1 or y == height - 1 else 0
+                     for x in range(width)] for y in range(height)]
+
             for y in range(1, height - 1):
                 for x in range(1, width - 1):
-                    if grid[y][x] == 0:
-                        open_neighbors = 0
-                        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
-                            if grid[y + dy][x + dx] == 0:
-                                open_neighbors += 1
-                        if open_neighbors >= 3:
-                            splits += 1
+                    if random.random() < wall_density:
+                        grid[y][x] = 1
 
-            if splits >= min_splits:
-                break
+            start = (1, 1)
+            end = (width - 2, height - 2)
+            grid[start[1]][start[0]] = 0
+            grid[end[1]][end[0]] = 0
 
-        return grid
+            open_neighbors(grid, start, [(1, 0), (0, 1)])
+            open_neighbors(grid, end, [(-1, 0), (0, -1)])
+
+            placed = 0
+            while placed <= traps:
+                random_y = random.randint(0, height - 1)
+                random_x = random.randint(0, width - 1)
+                if grid[random_y][random_x] == 0:
+                    grid[random_y][random_x] = 4
+                    placed += 1
+
+            if count_paths(grid, start, end, max_paths=min_paths) >= min_paths:
+                grid[start[1]][start[0]] = 2
+                grid[end[1]][end[0]] = 3
+                return grid
+
+        raise ValueError("Failed to generate a maze with the required number of paths.")
