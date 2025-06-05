@@ -24,11 +24,9 @@ class player:
     
     def movement_logic(self, x, y):
         if (0 <= x < len(self.grid[0]) and 0 <= y < len(self.grid)):
-            if self.grid[y][x] in (0, 2, 3):
+            if self.grid[y][x] in (0, 2, 3, 4):
                 self.x = x
                 self.y = y
-        
-        print(self.x, self.y)
     
     def movement(self, event):
         if event.type == pygame.KEYDOWN:
@@ -49,10 +47,11 @@ class player:
         new_y = self.y + dy
 
         if 0 <= new_x < len(self.grid[0]) and 0 <= new_y < len(self.grid):
-            if self.grid[new_y][new_x] in (0, 2, 3):
+            if self.grid[new_y][new_x] in (0, 2, 3, 4):
                 self.x, self.y = new_x, new_y
     
     def get_player_position(self):
+        print(self.x, self.y)
         return (self.x, self.y)
     
     def reset_plr(self):

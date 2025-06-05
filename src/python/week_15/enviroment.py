@@ -43,6 +43,8 @@ class enviroment:
                     rewards[y][x] = -1
                 elif grid[y][x] == 3:
                     rewards[y][x] = 100
+                elif grid[y][x] == 4:
+                    rewards[y][x] = -10
         
         for y in rewards:
             print(y)

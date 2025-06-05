@@ -21,7 +21,7 @@ grid = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ]
 
-grid = maze.maze().generate_maze(width=15, height=15, min_splits=3)
+grid = maze.maze().generate_random_maze(width=15, height=15, wall_density=0.25, min_paths=2, max_attempts=100, traps=29)
 
 env = enviroment.enviroment(grid)
 bot = agent.agent(env)
