@@ -51,11 +51,10 @@ class player:
                 self.x, self.y = new_x, new_y
     
     def get_player_position(self):
-        print(self.x, self.y)
         return (self.x, self.y)
     
     def reset_plr(self):
         self.get_start_position()
     
     def set_position(self, pos):
-        self.position = pos
+        self.x, self.y = pos

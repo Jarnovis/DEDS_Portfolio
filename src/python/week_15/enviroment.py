@@ -1,7 +1,4 @@
-import player
-import random
-import numpy as np
-from typing import Tuple, Optional
+import maze
 
 ACTIONS = {
     "UP": (0, -1),
@@ -11,10 +8,12 @@ ACTIONS = {
 }
 
 class enviroment:
-    def __init__(self, grid):
+    def __init__(self, grid, values):
         self.GRID = self.place_rewards(grid)
         self.START = self.find_position(grid, 2)
         self.FINSIH = self.find_position(grid, 3)
+        self.VALUES = values
+        self.GRID_NORMAL = grid
     
     # Positie vinden
     # 2 = start
@@ -31,6 +30,7 @@ class enviroment:
     # Muren: -100
     # Paden: -1
     # Finish: 100
+    # Obstakels: -10
     def place_rewards(self, grid):
         rewards = [[0 for x in range(len(grid[0]))] for y in range(len(grid))]
         for y in range(len(grid)):
@@ -46,7 +46,9 @@ class enviroment:
                 elif grid[y][x] == 4:
                     rewards[y][x] = -10
         
-        for y in rewards:
-            print(y)
-        
         return rewards
+    
+    def reset(self):
+        print(self.GRID)
+        self.__init__(maze.maze().generate_random_maze(self.VALUES), self.VALUES)
+        print(self.GRID)

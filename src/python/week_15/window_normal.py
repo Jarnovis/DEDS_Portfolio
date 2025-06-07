@@ -2,9 +2,8 @@ import pygame
 import numpy as np
 import player
 import enviroment
-import random
 
-class window:
+class window_normal:
     def __init__(self, width, height, grid, agent):
         self.width = width
         self.height = height
@@ -19,45 +18,12 @@ class window:
         self.episodes = 1
         self.finishes = 0
         self.agent_game = False
-        self.start_music = False
-        self.music_started = False
-
-        self.player_image = pygame.image.load("images/Player.jpg")
-        self.player_image = pygame.transform.scale(self.player_image, (self.blockSizeX, self.blockSizeY))
-        self.ob_imgs_load = [
-            pygame.transform.scale(pygame.image.load("images/Alpine.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/AstonMartin.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Ferrari.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Haas.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Mclaren.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Mercedes.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/RacingBulls.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Redbull.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Sauber.jpg"), (self.blockSizeX, self.blockSizeY)),
-            pygame.transform.scale(pygame.image.load("images/Williams.jpg"), (self.blockSizeX, self.blockSizeY))
-        ]
-
-        self.trap_images = {}
-        for row in range(self.grid_height):
-            for col in range(self.grid_width):
-                if self.given_grid[row][col] == 4:
-                    self.trap_images[(row, col)] = random.choice(self.ob_imgs_load)
-
+        
         pygame.init()
-        pygame.mixer.init()
-        self.background_sound = pygame.mixer.music.load("sounds/background.mp3")
 
     def create(self):
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Maze")
-        
-    def load_trap_images(self):
-        self.trap_images = {}
-        for row in range(self.grid_height):
-            for col in range(self.grid_width):
-                if self.given_grid[row][col] == 4:
-                    self.trap_images[(row, col)] = random.choice(self.ob_imgs_load)
-
 
     def draw_grid(self):
         for row in range(self.grid_height):
@@ -73,32 +39,19 @@ class window:
 
                 if val == 0:
                     color = (255, 255, 255)  
-                    pygame.draw.rect(self.screen, color, rect)
                 elif val == 1:
                     color = (100, 100, 100)
-                    pygame.draw.rect(self.screen, color, rect)
                 elif val == 2:
                     color = (0, 0, 0)   
-                    pygame.draw.rect(self.screen, color, rect)
                 elif val == 3:
                     color = (0, 255, 0) 
-                    pygame.draw.rect(self.screen, color, rect)
                 elif val == 4:
-                    if self.agent_game:
-                        image = self.trap_images.get((row, col))
-                        if image:
-                            self.screen.blit(image, rect.topleft)
-                        else:
-                            color = (0, 255, 255)  
-                            pygame.draw.rect(self.screen, color, rect)
-                    else:
-                        color = (255, 0, 0) 
-                        pygame.draw.rect(self.screen, color, rect)
+                    color = (128, 128, 0) 
                 else:
                     color = (0, 255, 255)  
-                    pygame.draw.rect(self.screen, color, rect)
 
-                pygame.draw.rect(self.screen, (50, 50, 50), rect, 1)
+                pygame.draw.rect(self.screen, color, rect)
+                pygame.draw.rect(self.screen, (50, 50, 50), rect, 1) 
 
     def draw_plr(self):
         if self.agent_game:
@@ -115,19 +68,9 @@ class window:
         )
 
         if not self.agent_game:
-            if self.start_music and self.music_started:
-                pygame.mixer.music.stop()
-                self.music_started = False
-                self.start_music = False
             pygame.draw.rect(self.screen, (0, 0, 255), rect)
         else:
-            if not self.start_music:
-                self.start_music = True
-            if self.start_music and not self.music_started:
-                pygame.mixer.music.play(-1)
-                self.music_started = True
-
-            self.screen.blit(self.player_image, rect.topleft)
+            pygame.draw.rect(self.screen, (0, 0, 200), rect)
 
     def text(self, text):
         font = pygame.font.SysFont(None, 24)
@@ -164,7 +107,7 @@ class window:
                 self.episodes += 1
         
         return next_pos
-
+    
     def draw_q_values(self):
         font = pygame.font.SysFont(None, 14)
         for y in range(self.grid_height):
@@ -174,6 +117,7 @@ class window:
 
                 q_values = self.agent.q_table[y, x]
                 best_action = np.argmax(q_values)
+                
                 
                 for i, q_val in enumerate(q_values):
                     if i == 0: 
@@ -224,11 +168,11 @@ class window:
                         self.finishes = 0
                         self.given_grid = self.agent.env.GRID_NORMAL
                         self.plr = player.player(self.given_grid)
-                        self.load_trap_images()
                 
                 if not self.agent_game:
                     self.plr.movement(event)
-
+                
+            
             if self.agent_game:
                 next_position = self.agent_position()
                 self.plr.set_position(next_position)
@@ -236,7 +180,7 @@ class window:
             self.screen.fill((0, 0, 0))
             self.draw_grid()
             self.draw_plr()
-
+            
             if self.agent_game:
                 self.draw_q_values()
                 self.text_agent(speed)
@@ -244,12 +188,12 @@ class window:
                 self.text_plr()
             
             if max_steps < self.steps:
-                self.agent.set_posistion((1, 1))
+                self.agent.set_position((1, 1))
                 self.steps = 0
                 self.episodes += 1
                 print("Out of steps! Restarting episode.")
-
+                
             pygame.display.flip()
-            pygame.time.delay(speed)
 
+            pygame.time.delay(speed) 
         pygame.quit()
