@@ -1,31 +1,31 @@
+import window_normal
 import window
 import maze
 import enviroment
 import agent
+import msvcrt
 
-grid = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,2,1,0,0,0,0,1,0,0,0,0,0,0,1],
-    [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
-    [1,0,1,0,0,0,0,0,0,0,1,0,0,0,1],
-    [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
-    [1,0,0,0,1,0,0,0,1,0,0,0,1,0,1],
-    [1,1,1,0,1,1,1,0,1,1,1,0,1,1,1],
-    [1,0,0,0,1,0,1,0,1,0,1,0,0,0,1],
-    [1,0,1,1,1,0,0,0,1,0,1,1,1,0,1],
-    [1,0,0,0,1,0,1,0,0,0,0,0,0,0,1],
-    [1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
-    [1,0,0,0,0,0,0,1,0,0,0,1,0,0,1],
-    [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
-    [1,0,0,0,0,0,1,0,0,0,0,0,1,3,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-]
+values = {
+    "width": 12,
+    "height": 12,
+    "wall_density": 0.15,
+    "min_paths": 2,
+    "max_attempts": 10,
+    "traps": 15
+}
 
-grid = maze.maze().generate_random_maze(width=15, height=15, wall_density=0.25, min_paths=2, max_attempts=100, traps=29)
+grid = maze.maze().generate_random_maze(values)
 
-env = enviroment.enviroment(grid)
+env = enviroment.enviroment(grid, values)
 bot = agent.agent(env)
 
-win = window.window(600, 600, grid, bot)
+print("Press y to activate the special style for the game")
+key = msvcrt.getch()
+kind = key.decode().lower()
+
+if kind.lower() == 'y':
+    win = window.window(720, 720, grid, bot)
+else:
+    win = window_normal.window_normal(720, 720, grid, bot)
 win.create()
 win.run()
