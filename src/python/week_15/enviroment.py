@@ -44,7 +44,7 @@ class enviroment:
                 elif grid[y][x] == 3:
                     rewards[y][x] = 100
                 elif grid[y][x] == 4:
-                    rewards[y][x] = -10
+                    rewards[y][x] = -25
         
         return rewards
     
