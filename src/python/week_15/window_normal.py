@@ -188,7 +188,7 @@ class window_normal:
                 self.text_plr()
             
             if max_steps < self.steps:
-                self.agent.set_position((1, 1))
+                self.agent.set_posistion((1, 1))
                 self.steps = 0
                 self.episodes += 1
                 print("Out of steps! Restarting episode.")
