@@ -11,7 +11,7 @@ values = {
     "wall_density": 0.15,
     "min_paths": 2,
     "max_attempts": 10,
-    "traps": 15
+    "traps": 25
 }
 
 grid = maze.maze().generate_random_maze(values)
