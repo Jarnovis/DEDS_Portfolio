@@ -1,4 +1,4 @@
-from test import test_toString, test_addFirst, test_remove, test_smallest, test_sortSimple, test_uniq
+from test import *
 
 if __name__ == "__main__":
     test_toString()
@@ -7,3 +7,6 @@ if __name__ == "__main__":
     test_smallest()
     test_sortSimple()
     test_uniq()
+    test_sublist()
+    test_merge()
+    test_sort_merge()   

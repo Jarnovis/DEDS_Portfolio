@@ -22,12 +22,12 @@ class LinkedList:
         current.next = new_node
 
         
-    def add_first(self, data):
+    def addFirst(self, data):
         new_node = Node(data)
         new_node.next = self.head
         self.head = new_node
     
-    def add_first_new_list(self, data):
+    def addFirstNewList(self, data):
         list = LinkedList()
         list.add(data)
         
@@ -119,6 +119,58 @@ class LinkedList:
             return 1 + self.unique(node.next, node.data)
 
         return self.unique(node.next, previous)
+    
+    def subList(self, start, end):
+        new_list = LinkedList()
+        current = self.head
+        index = 0
+
+        while current and index < end:
+            if index >= start:
+                new_list.add(current.data)
+            current = current.next
+            index += 1
+
+        return new_list
+    
+    def merge(self, other):
+        new_list = LinkedList()
+        
+        this = self.head
+        other = other.head
+
+        while this and other:
+            if this.data <= other.data:
+                new_list.add(this.data)
+                this = this.next
+            else:
+                new_list.add(other.data)
+                other = other.next
+
+        while this:
+            new_list.add(this.data)
+            this = this.next
+
+        while other:
+            new_list.add(other.data)
+            other = other.next
+
+        return new_list
+    
+    def sortMerge(self):
+        if self.head is None or self.head.next is None:
+            return self  
+
+        length = self.length()
+        mid = length // 2
+
+        left = self.subList(0, mid)
+        right = self.subList(mid, length)
+
+        sorted_left = left.sortMerge()
+        sorted_right = right.sortMerge()
+
+        return sorted_left.merge(sorted_right)
 
 
 
@@ -145,7 +197,3 @@ class LinkedListEmpty(LinkedList):
 
     def display(self):
         print("Linked List is leeg!!!!!!!")
-
-
-ll = LinkedListEmpty()
-
