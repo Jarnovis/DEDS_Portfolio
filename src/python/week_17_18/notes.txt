@@ -1,0 +1,8 @@
+Les 2, opdracht 10:
+Duurt te lang voordat het bestand in een linkedlist is gestopt, des ondanks de methode O(n^2) is.
+
+les 3, opdracht 7:
+O(n*logn)
+
+les 3, opdracht 8:
+Wederom duurt ook te lang om het bestand in een linkedlist te stoppen. Na 10 minuten werd er nog steeds uitgelezen
